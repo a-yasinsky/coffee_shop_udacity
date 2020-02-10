@@ -30,10 +30,10 @@ db_drop_and_create_all()
 @app.route('/drinks', methods = ['GET'])
 def retrieve_drinks():
     selection = Drink.query.all()
-    if len(selection) == 0:
-        abort(404)
+    #if len(selection) == 0:
+    #    abort(404)
 
-    drinks = [drink.short() for drink in drinks]
+    drinks = [drink.short() for drink in selection]
     return jsonify({
         'success': True,
         'drinks': drinks
@@ -47,7 +47,18 @@ def retrieve_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail', methods = ['GET'])
+@requires_auth('get:drinks-detail')
+def retrieve_drinks_detail():
+    selection = Drink.query.all()
+    #if len(selection) == 0:
+    #    abort(404)
 
+    drinks = [drink.long() for drink in selection]
+    return jsonify({
+        'success': True,
+        'drinks': drinks
+        })
 
 '''
 @TODO implement endpoint
@@ -58,7 +69,27 @@ def retrieve_drinks():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods = ['POST'])
+@requires_auth('post:drinks')
+def create_drink():
+    body = request.get_json()
 
+    new_title = body.get('title', None)
+    new_recipe = body.get('recipe', None)
+    try:
+        drink = Drink()
+        drink.title = new_title
+        drink.recipe = json.dumps(new_recipe)
+        drink.insert()
+
+        return jsonify({
+            'success': True,
+            'drink': [drink.long()]
+            })
+
+    except:
+        # print(sys.exc_info())
+        abort(422)
 
 '''
 @TODO implement endpoint
@@ -71,7 +102,27 @@ def retrieve_drinks():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods = ['PATCH'])
+@requires_auth('patch:drinks')
+def update_drink(drink_id):
+    body = request.get_json()
 
+    title = body.get('title', None)
+    recipe = body.get('recipe', None)
+    try:
+        drink = Drink.query.get_or_404(drink_id)
+        drink.title = title
+        drink.recipe = json.dumps(recipe)
+        drink.update()
+
+        return jsonify({
+            'success': True,
+            'drink': [drink.long()]
+            })
+
+    except:
+        # print(sys.exc_info())
+        abort(422)
 
 '''
 @TODO implement endpoint
@@ -83,7 +134,21 @@ def retrieve_drinks():
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:drink_id>', methods = ['DELETE'])
+@requires_auth('delete:drinks')
+def delete_drink(drink_id):
+    try:
+        drink = Drink.query.get_or_404(drink_id)
+        drink.delete()
 
+        return jsonify({
+            'success': True,
+            'drink': drink_id
+            })
+
+    except:
+        # print(sys.exc_info())
+        abort(422)
 
 ## Error Handling
 '''
