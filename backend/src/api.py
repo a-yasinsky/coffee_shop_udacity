@@ -49,7 +49,7 @@ def retrieve_drinks():
 '''
 @app.route('/drinks-detail', methods = ['GET'])
 @requires_auth('get:drinks-detail')
-def retrieve_drinks_detail():
+def retrieve_drinks_detail(payload):
     selection = Drink.query.all()
     #if len(selection) == 0:
     #    abort(404)
