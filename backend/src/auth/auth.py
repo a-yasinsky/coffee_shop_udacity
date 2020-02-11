@@ -8,6 +8,7 @@ from urllib.request import urlopen
 AUTH0_DOMAIN = 'skydev.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'coffee_shop'
+AUTH0_CLIENT_ID = 'OQOczJSjI2xu0Ys7Dybeo552ILz0s38y'
 
 ## AuthError Exception
 '''
