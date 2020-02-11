@@ -71,7 +71,7 @@ def retrieve_drinks_detail(payload):
 '''
 @app.route('/drinks', methods = ['POST'])
 @requires_auth('post:drinks')
-def create_drink():
+def create_drink(payload):
     body = request.get_json()
 
     new_title = body.get('title', None)
@@ -104,7 +104,7 @@ def create_drink():
 '''
 @app.route('/drinks/<int:drink_id>', methods = ['PATCH'])
 @requires_auth('patch:drinks')
-def update_drink(drink_id):
+def update_drink(payload, drink_id):
     body = request.get_json()
 
     title = body.get('title', None)
@@ -136,7 +136,7 @@ def update_drink(drink_id):
 '''
 @app.route('/drinks/<int:drink_id>', methods = ['DELETE'])
 @requires_auth('delete:drinks')
-def delete_drink(drink_id):
+def delete_drink(payload, drink_id):
     try:
         drink = Drink.query.get_or_404(drink_id)
         drink.delete()
